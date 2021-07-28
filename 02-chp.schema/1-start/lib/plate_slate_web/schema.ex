@@ -7,13 +7,21 @@
 # Visit http://www.pragmaticprogrammer.com/titles/wwgraphql for more book information.
 #---
 defmodule PlateSlateWeb.Schema do
+  alias PlateSlate.{Menu, Repo}
   use Absinthe.Schema
 
   query do
-    # <<Ignore this for now>>
+    @desc "The list of the available items on the menu"
+    field :menu_items, list_of(:menu_item) do
+      resolve fn _,_,_ ->
+        {:ok, Repo.all(Menu.Item)}
+      end
+    end
   end
 
   object :menu_item do
-    # <<We'll add fields soon>>
+    field :id, :id
+    field :name, :string
+    field :description, :string
   end
 end
