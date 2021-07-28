@@ -19,9 +19,13 @@ defmodule PlateSlateWeb.Schema do
     end
   end
 
+  @desc "menu item is the object that contains the info of the food?"
   object :menu_item do
     field :id, :id
     field :name, :string
+    @desc "The description of the menu item"
     field :description, :string
+    @desc "The price of the menu item"
+    field :price, :float
   end
 end
