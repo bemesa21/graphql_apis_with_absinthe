@@ -80,4 +80,24 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
       assert message == "Argument \"matching\" has invalid value 123."
       end
 
+
+      test "menuItems field filters by name when using a variable" do
+        query = """
+        query ($term: String) {
+          menuItems(matching: $term) {
+            name
+          }
+        }
+        """
+        variables = %{"term" => "reu"}
+        response = get(build_conn(), "/api", query: query, variables: variables)
+        assert json_response(response, 200) == %{
+          "data" => %{
+            "menuItems" => [
+              %{"name" => "Reuben"},
+            ]
+          }
+        }
+end
+
 end
