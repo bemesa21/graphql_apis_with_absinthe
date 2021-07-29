@@ -106,6 +106,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
             name
         } }
         """
+        ##By convention, enum values are passed in all uppercase letters!!!
         response = get(build_conn(), "/api", query: query)
         assert %{"data" =>
           %{
@@ -123,6 +124,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
             }
           }
           """
+          ##By convention, enum values are passed in all uppercase letters!!!
           variables = %{"order" => "DESC"}
 
           response = get(build_conn(), "/api", query: query, variables: variables)
