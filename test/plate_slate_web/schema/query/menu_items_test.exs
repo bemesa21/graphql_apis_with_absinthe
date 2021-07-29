@@ -21,21 +21,20 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
     assert json_response(conn, 200) == %{
       "data" => %{
         "menuItems" => [
-          %{"name" => "Reuben"},
-          %{"name" => "Croque Monsieur"},
-          %{"name" => "Muffuletta"},
-          # Rest of items
           %{"name" => "Bánh mì"},
-          %{"name" => "Vada Pav"},
+          %{"name" => "Chocolate Milkshake"},
+          %{"name" => "Croque Monsieur"},
           %{"name" => "French Fries"},
-          %{"name" => "Papadum"},
-          %{"name" => "Pasta Salad"},
-          %{"name" => "Water"},
-          %{"name" => "Soft Drink"},
           %{"name" => "Lemonade"},
           %{"name" => "Masala Chai"},
+          %{"name" => "Muffuletta"},
+          %{"name" => "Papadum"},
+          %{"name" => "Pasta Salad"},
+          %{"name" => "Reuben"},
+          %{"name" => "Soft Drink"},
+          %{"name" => "Vada Pav"},
           %{"name" => "Vanilla Milkshake"},
-          %{"name" => "Chocolate Milkshake"},
+          %{"name" => "Water"}
         ]
       }
     }
@@ -98,6 +97,38 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
             ]
           }
         }
-end
+      end
+
+      test "menuItems field returns items descending using literals" do
+        query =  """
+        {
+          menuItems(order: DESC) {
+            name
+        } }
+        """
+        response = get(build_conn(), "/api", query: query)
+        assert %{"data" =>
+          %{
+          "menuItems" => [
+            %{"name" => "Water"} | _]
+            }
+        } = json_response(response, 200)
+      end
+
+      test "menuItems field returns items descending using variables" do
+        query = """
+          query ($order: SortOrder!) {
+            menuItems(order: $order) {
+              name
+            }
+          }
+          """
+          variables = %{"order" => "DESC"}
+
+          response = get(build_conn(), "/api", query: query, variables: variables)
+          assert %{
+            "data" => %{"menuItems" => [%{"name" => "Water"} | _]}
+          } = json_response(response, 200)
+      end
 
 end
