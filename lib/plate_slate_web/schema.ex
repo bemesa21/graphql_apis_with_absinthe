@@ -8,14 +8,16 @@
 #---
 defmodule PlateSlateWeb.Schema do
   alias PlateSlate.{Menu, Repo}
+  alias PlateSlateWeb.Resolvers
+
   use Absinthe.Schema
+  import Ecto.Query
 
   query do
     @desc "The list of the available items on the menu"
     field :menu_items, list_of(:menu_item) do
-      resolve fn _,_,_ ->
-        {:ok, Repo.all(Menu.Item)}
-      end
+      arg :matching, :string
+      resolve &Resolvers.Menu.menu_items/3
     end
   end
 
