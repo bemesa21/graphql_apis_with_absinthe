@@ -237,6 +237,10 @@ defmodule PlateSlate.Menu do
         from q in query,
         join: t in assoc(q, :tags),
         where: ilike(t.name, ^"%#{tag_name}%")
+      {:added_After, date}, query ->
+        from q in query, where: q.added_on >= ^date
+      {:added_before, date}, query ->
+        from q in query, where: q.added_on <= ^date
     end)
   end
 end
