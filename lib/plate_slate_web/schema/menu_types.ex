@@ -22,6 +22,7 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
 
   @desc "menu item is the object that contains the info of the food?"
   object :menu_item do
+    interfaces [:search_result]
     field :id, :id
     field :name, :string
     @desc "The description of the menu item"
@@ -33,6 +34,7 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
   end
 
   object :category do
+    interfaces [:search_result]
     field :name, :string
     field :description, :string
     field :items, list_of(:menu_item) do
@@ -40,8 +42,8 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     end
   end
 
-  union :search_result do
-    types [:menu_item, :category]
+  interface :search_result do
+    field :name, :string
     #resolve type macro takes 2 params, the first is the value that we are checking
     #the second param is the resolution information
     resolve_type fn
