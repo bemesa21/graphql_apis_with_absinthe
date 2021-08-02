@@ -41,14 +41,21 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   end
 
   test "menuItems field returns menu items filtered by name" do
+    #query = """
+    #{
+    #  menuItems(matching: "reu") {
+    #    name
+    #  }
+    #}
+    #"""
+
     query = """
     {
-      menuItems(matching: "reu") {
+      menuItems(filter: {name: "reu"}) {
         name
       }
     }
     """
-
     response = get(build_conn(), "/api", query: query)
 
     assert json_response(response, 200) == %{
@@ -62,9 +69,17 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
 
 
     test "menuItems field returns errors when using a bad value" do
+      #query = """
+      #{
+      #  menuItems(matching: 123) {
+      #    name
+      #  }
+      #}
+      #"""
+
       query = """
       {
-        menuItems(matching: 123) {
+        menuItems(filter: {name: 123}) {
           name
         }
       }
@@ -76,19 +91,30 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
       ]} = json_response(response, 400)
 
 
-      assert message == "Argument \"matching\" has invalid value 123."
+      assert message == "Argument \"filter\" has invalid value {name: 123}.\nIn field \"name\": Expected type \"String\", found 123."
       end
 
 
       test "menuItems field filters by name when using a variable" do
+        #query = """
+        #query ($term: String) {
+        #  menuItems(matching: $term) {
+        #    name
+        #  }
+        #}
+        #"""
+        #variables = %{"term" => "reu"}
+
         query = """
-        query ($term: String) {
-          menuItems(matching: $term) {
+        query ($filter: MenuItemFilter!) {
+          menuItems(filter: $filter) {
             name
           }
         }
         """
-        variables = %{"term" => "reu"}
+
+        variables = %{filter: %{"name" => "reu"}}
+
         response = get(build_conn(), "/api", query: query, variables: variables)
         assert json_response(response, 200) == %{
           "data" => %{
@@ -133,4 +159,30 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
           } = json_response(response, 200)
       end
 
-end
+      test "menuItems field returns menuItems, filtering with a literal" do
+        query = """
+        {
+          menuItems(filter: {category: "Sandwiches", tag: "Vegetarian"}) {
+            name
+          }
+        }
+        """
+        response = get(build_conn(), "/api", query: query)
+        assert %{
+          "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]}
+        } == json_response(response, 200)
+      end
+
+      test "menuItems field returns menuItems, filtering with a variable" do
+        query = """
+        query ($filter: MenuItemFilter!) {
+          menuItems(filter: $filter) {
+            name
+        } }
+        """
+        variables = %{filter: %{"tag" => "Vegetarian", "category" => "Sandwiches"}}
+        response = get(build_conn(), "/api", query: query, variables: variables)
+        assert %{
+        "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]} } == json_response(response, 200)
+        end
+  end
