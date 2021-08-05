@@ -12,7 +12,7 @@ defmodule PlateSlateWeb.Schema do
 
   use Absinthe.Schema
   import_types __MODULE__.MenuTypes
-
+  import_types __MODULE__.OrderingTypes
   enum :sort_order do
     value :asc
     value :desc
@@ -55,6 +55,11 @@ defmodule PlateSlateWeb.Schema do
       arg :input, non_null(:menu_item_input)
       resolve &Resolvers.Menu.create_item/3
     end
+
+    field :place_order, :order_result do
+      arg :input, non_null(:place_order_input)
+      resolve &Resolvers.Ordering.place_order/3
+    end
   end
 
   scalar :decimal do
@@ -71,4 +76,13 @@ defmodule PlateSlateWeb.Schema do
     field :key, non_null(:string)
     field :message, non_null(:string)
   end
+
+  subscription do
+    field :new_order, :order do
+      config fn _args, _info ->
+        {:ok, topic: "*"}
+      end
+    end
+  end
+
 end
